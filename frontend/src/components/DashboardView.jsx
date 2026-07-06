@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { categoryIcon } from "../categoryIcons";
+import AccountsView from "./AccountsView";
+import CategoriesView from "./CategoriesView";
 
 const GROUP_LABELS = {
   income: "הכנסות",
@@ -23,10 +25,11 @@ function monthLabel(d) {
   return d.toLocaleDateString("he-IL", { month: "long", year: "numeric" });
 }
 
-export default function DashboardView() {
+export default function DashboardView({ accounts, categories, onChangeLookups }) {
   const [cursor, setCursor] = useState(() => new Date());
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   async function refresh() {
     setLoading(true);
@@ -56,19 +59,28 @@ export default function DashboardView() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <div className="flex-1 flex items-center justify-between">
+          <button
+            onClick={() => setCursor((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
+            className="w-9 h-9 rounded-xl bg-surface flex items-center justify-center text-lg active:scale-95 transition-transform"
+          >
+            ‹
+          </button>
+          <p className="font-extrabold text-[15px]">{monthLabel(cursor)}</p>
+          <button
+            onClick={() => setCursor((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
+            className="w-9 h-9 rounded-xl bg-surface flex items-center justify-center text-lg active:scale-95 transition-transform"
+          >
+            ›
+          </button>
+        </div>
         <button
-          onClick={() => setCursor((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1))}
-          className="w-9 h-9 rounded-xl bg-surface flex items-center justify-center text-lg active:scale-95 transition-transform"
+          onClick={() => setSettingsOpen(true)}
+          className="w-9 h-9 rounded-xl bg-surface flex items-center justify-center text-base active:scale-95 transition-transform"
+          aria-label="ניהול חשבונות וקטגוריות"
         >
-          ‹
-        </button>
-        <p className="font-extrabold text-[15px]">{monthLabel(cursor)}</p>
-        <button
-          onClick={() => setCursor((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1))}
-          className="w-9 h-9 rounded-xl bg-surface flex items-center justify-center text-lg active:scale-95 transition-transform"
-        >
-          ›
+          ⚙️
         </button>
       </div>
 
@@ -101,6 +113,56 @@ export default function DashboardView() {
       </div>
 
       {data.top_expenses.length > 0 && <TopExpenses items={data.top_expenses} />}
+
+      {settingsOpen && (
+        <SettingsSheet
+          accounts={accounts}
+          categories={categories}
+          onChange={() => {
+            onChangeLookups();
+            refresh();
+          }}
+          onClose={() => setSettingsOpen(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+function SettingsSheet({ accounts, categories, onChange, onClose }) {
+  const [tab, setTab] = useState("accounts");
+  return (
+    <div
+      className="fixed inset-0 z-20 bg-black/60 flex items-end sm:items-center justify-center"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div className="bg-surface w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-extrabold">ניהול חשבונות וקטגוריות</h2>
+          <button onClick={onClose} className="text-faint text-xl leading-none px-1">×</button>
+        </div>
+
+        <div className="flex rounded-xl overflow-hidden bg-surface-2 p-1 text-sm">
+          <button
+            onClick={() => setTab("accounts")}
+            className={`flex-1 py-2 rounded-lg font-bold transition-colors ${tab === "accounts" ? "bg-accent text-white" : "text-faint"}`}
+          >
+            🏦 חשבונות
+          </button>
+          <button
+            onClick={() => setTab("categories")}
+            className={`flex-1 py-2 rounded-lg font-bold transition-colors ${tab === "categories" ? "bg-accent text-white" : "text-faint"}`}
+          >
+            🏷️ קטגוריות
+          </button>
+        </div>
+
+        {tab === "accounts" ? (
+          <AccountsView accounts={accounts} onChange={onChange} />
+        ) : (
+          <CategoriesView categories={categories} onChange={onChange} />
+        )}
+      </div>
     </div>
   );
 }

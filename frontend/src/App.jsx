@@ -2,16 +2,12 @@ import { useEffect, useState } from "react";
 import { api } from "./api";
 import DashboardView from "./components/DashboardView";
 import TransactionsView from "./components/TransactionsView";
-import AccountsView from "./components/AccountsView";
-import CategoriesView from "./components/CategoriesView";
 import ImportView from "./components/ImportView";
 
 const TABS = [
   { key: "dashboard", label: "לוח בקרה", icon: "📊" },
+  { key: "import", label: "יבוא נתונים", icon: "📥" },
   { key: "transactions", label: "פעילות", icon: "📒" },
-  { key: "import", label: "ייבוא", icon: "📥" },
-  { key: "accounts", label: "חשבונות", icon: "🏦" },
-  { key: "categories", label: "קטגוריות", icon: "🏷️" },
 ];
 
 export default function App() {
@@ -43,15 +39,11 @@ export default function App() {
         {!loaded ? (
           <p className="text-center text-faint mt-10 text-sm">טוען…</p>
         ) : tab === "dashboard" ? (
-          <DashboardView />
+          <DashboardView accounts={accounts} categories={categories} onChangeLookups={refreshLookups} />
         ) : tab === "transactions" ? (
           <TransactionsView accounts={accounts} categories={categories} />
-        ) : tab === "import" ? (
-          <ImportView accounts={accounts} />
-        ) : tab === "accounts" ? (
-          <AccountsView accounts={accounts} onChange={refreshLookups} />
         ) : (
-          <CategoriesView categories={categories} onChange={refreshLookups} />
+          <ImportView accounts={accounts} />
         )}
       </main>
 
