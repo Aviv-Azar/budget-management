@@ -21,7 +21,7 @@ export default function CategoriesView({ categories, onChange }) {
   }
 
   async function handleDelete(id) {
-    if (!confirm("Delete this category? Transactions using it will become uncategorized.")) return;
+    if (!confirm("למחוק את הקטגוריה הזו? תנועות שמשויכות אליה יהפכו ללא מקוטלגות.")) return;
     await api.categories.remove(id);
     onChange();
   }
@@ -34,7 +34,7 @@ export default function CategoriesView({ categories, onChange }) {
       <form onSubmit={handleAdd} className="flex gap-2 items-center">
         <input
           type="text"
-          placeholder="New category name"
+          placeholder="שם קטגוריה חדשה"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="flex-1 rounded-xl border border-border bg-surface-2 text-ink placeholder:text-faint px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -44,8 +44,8 @@ export default function CategoriesView({ categories, onChange }) {
           onChange={(e) => setKind(e.target.value)}
           className="rounded-xl border border-border bg-surface-2 text-ink px-2.5 py-2.5 text-sm"
         >
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
+          <option value="expense">הוצאה</option>
+          <option value="income">הכנסה</option>
         </select>
         <input
           type="color"
@@ -54,13 +54,13 @@ export default function CategoriesView({ categories, onChange }) {
           className="w-10 h-10 rounded-xl border border-border bg-transparent shrink-0"
         />
         <button className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform">
-          Add
+          הוספה
         </button>
       </form>
       {error && <p className="text-sm text-expense font-medium">{error}</p>}
 
-      <CategoryGroup title="Expense categories" items={expense} onDelete={handleDelete} />
-      <CategoryGroup title="Income categories" items={income} onDelete={handleDelete} />
+      <CategoryGroup title="קטגוריות הוצאה" items={expense} onDelete={handleDelete} />
+      <CategoryGroup title="קטגוריות הכנסה" items={income} onDelete={handleDelete} />
     </div>
   );
 }
@@ -70,7 +70,7 @@ function CategoryGroup({ title, items, onDelete }) {
     <div>
       <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-2 px-1">{title}</p>
       <div className="rounded-2xl overflow-hidden bg-surface divide-y divide-border">
-        {items.length === 0 && <p className="text-center text-muted p-5 text-sm">None yet.</p>}
+        {items.length === 0 && <p className="text-center text-muted p-5 text-sm">עדיין אין.</p>}
         {items.map((c) => (
           <div key={c.id} className="flex items-center gap-3 px-4 py-3">
             <span
@@ -81,7 +81,7 @@ function CategoryGroup({ title, items, onDelete }) {
             </span>
             <span className="flex-1 text-[15px] font-semibold">{c.name}</span>
             <button onClick={() => onDelete(c.id)} className="text-xs text-expense font-bold px-2 py-1">
-              Delete
+              מחיקה
             </button>
           </div>
         ))}

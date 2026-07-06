@@ -4,7 +4,7 @@ import { categoryIcon } from "../categoryIcons";
 import TransactionForm from "./TransactionForm";
 
 function formatMoney(n) {
-  return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(n);
+  return new Intl.NumberFormat("he-IL", { style: "currency", currency: "ILS" }).format(n);
 }
 
 function todayISO() {
@@ -84,7 +84,7 @@ export default function TransactionsView({ accounts, categories }) {
         category_id: null,
         date: result.date ?? todayISO(),
         amount: result.amount != null ? -Math.abs(result.amount) : null,
-        description: result.merchant ?? "Receipt",
+        description: result.merchant ?? "קבלה",
         merchant: result.merchant ?? null,
         source: "ocr",
         raw_text: result.raw_text,
@@ -99,9 +99,9 @@ export default function TransactionsView({ accounts, categories }) {
   return (
     <div className="space-y-5">
       <div className="grid grid-cols-3 gap-2.5">
-        <SummaryCard label="Income" value={income} tone="income" />
-        <SummaryCard label="Expenses" value={expense} tone="expense" />
-        <SummaryCard label="Net" value={income + expense} tone="net" />
+        <SummaryCard label="הכנסות" value={income} tone="income" />
+        <SummaryCard label="הוצאות" value={expense} tone="expense" />
+        <SummaryCard label="נטו" value={income + expense} tone="net" />
       </div>
 
       <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export default function TransactionsView({ accounts, categories }) {
           onChange={(e) => setAccountFilter(e.target.value)}
           className="flex-1 rounded-xl border border-border bg-surface text-ink px-3 py-2.5 text-sm font-medium"
         >
-          <option value="">All accounts</option>
+          <option value="">כל החשבונות</option>
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>{a.name}</option>
           ))}
@@ -120,7 +120,7 @@ export default function TransactionsView({ accounts, categories }) {
           disabled={scanning}
           className="rounded-xl bg-surface border border-border text-ink px-3.5 py-2.5 text-sm font-bold whitespace-nowrap disabled:opacity-50 active:scale-95 transition-transform"
         >
-          {scanning ? "Scanning…" : "📷 Scan"}
+          {scanning ? "סורק…" : "📷 סריקה"}
         </button>
         <input
           ref={fileInputRef}
@@ -134,14 +134,14 @@ export default function TransactionsView({ accounts, categories }) {
           onClick={() => setEditing({})}
           className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold whitespace-nowrap active:scale-95 transition-transform"
         >
-          + Add
+          + הוספה
         </button>
       </div>
 
       {scanError && <p className="text-sm text-expense">{scanError}</p>}
 
       {loading ? (
-        <p className="text-center text-faint mt-10 text-sm">Loading…</p>
+        <p className="text-center text-faint mt-10 text-sm">טוען…</p>
       ) : transactions.length === 0 ? (
         <EmptyState onAdd={() => setEditing({})} onScan={() => fileInputRef.current?.click()} />
       ) : (
@@ -149,7 +149,7 @@ export default function TransactionsView({ accounts, categories }) {
           {grouped.map(([date, items]) => (
             <div key={date}>
               <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-2 px-1">
-                {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+                {new Date(date + "T00:00:00").toLocaleDateString("he-IL", {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
@@ -162,7 +162,7 @@ export default function TransactionsView({ accounts, categories }) {
                     <button
                       key={t.id}
                       onClick={() => setEditing(t)}
-                      className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-surface-2 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-surface-2 transition-colors"
                     >
                       <span
                         className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0"
@@ -227,20 +227,20 @@ function EmptyState({ onAdd, onScan }) {
   return (
     <div className="rounded-2xl bg-surface px-6 py-10 text-center mt-2">
       <div className="text-4xl mb-3">📒</div>
-      <p className="font-bold text-ink mb-1">No transactions yet</p>
-      <p className="text-sm text-muted mb-5">Add one by hand, scan a receipt, or import a statement.</p>
+      <p className="font-bold text-ink mb-1">עדיין אין תנועות</p>
+      <p className="text-sm text-muted mb-5">הוסיפו ידנית, סרקו קבלה או ייבאו דוח בנק.</p>
       <div className="flex items-center justify-center gap-2">
         <button
           onClick={onAdd}
           className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform"
         >
-          + Add transaction
+          + הוספת תנועה
         </button>
         <button
           onClick={onScan}
           className="rounded-xl bg-surface-2 border border-border text-ink px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform"
         >
-          📷 Scan receipt
+          📷 סריקת קבלה
         </button>
       </div>
     </div>

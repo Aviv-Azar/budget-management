@@ -26,11 +26,13 @@ export const api = {
   accounts: {
     list: () => request("/accounts"),
     create: (data) => request("/accounts", { method: "POST", body: JSON.stringify(data) }),
+    update: (id, data) => request(`/accounts/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     remove: (id) => request(`/accounts/${id}`, { method: "DELETE" }),
   },
   categories: {
     list: () => request("/categories"),
     create: (data) => request("/categories", { method: "POST", body: JSON.stringify(data) }),
+    update: (id, data) => request(`/categories/${id}`, { method: "PUT", body: JSON.stringify(data) }),
     remove: (id) => request(`/categories/${id}`, { method: "DELETE" }),
   },
   transactions: {

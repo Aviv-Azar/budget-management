@@ -13,9 +13,14 @@ from ..dedup import make_dedup_key
 
 router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
 
-CONFIRM_WORDS = {"yes", "y", "confirm", "ok", "okay", "save"}
-CANCEL_WORDS = {"no", "n", "cancel"}
-CORRECTION_RE = re.compile(r"^(amount|date|merchant)\s+(.+)$", re.IGNORECASE)
+CONFIRM_WORDS = {"yes", "y", "confirm", "ok", "okay", "save", "כן", "אישור", "שמור"}
+CANCEL_WORDS = {"no", "n", "cancel", "לא", "ביטול"}
+CORRECTION_RE = re.compile(r"^(amount|date|merchant|סכום|תאריך|בית עסק)\s+(.+)$", re.IGNORECASE)
+CORRECTION_FIELDS = {
+    "amount": "amount", "סכום": "amount",
+    "date": "date", "תאריך": "date",
+    "merchant": "merchant", "בית עסק": "merchant",
+}
 
 
 @router.get("/webhook")
@@ -67,7 +72,7 @@ def handle_message(message: dict):
             handle_image_message(db, wa_from, message.get("image", {}).get("id"))
         else:
             whatsapp_client.send_text(
-                wa_from, "I can only handle text entries like \"Coffee 15\" or receipt photos right now."
+                wa_from, 'אני יודע לטפל רק בהודעות טקסט כמו "קפה 15" או בתמונות של קבלות כרגע.'
             )
 
         if message_id:
@@ -98,16 +103,16 @@ def _latest_pending(db, wa_from: str):
 
 
 def _format_draft_message(pending: "models.PendingReceipt") -> str:
-    merchant = pending.merchant or "(not found)"
-    date_str = pending.date.isoformat() if pending.date else "(not found)"
-    amount_str = f"${pending.amount:.2f}" if pending.amount is not None else "(not found)"
+    merchant = pending.merchant or "(לא נמצא)"
+    date_str = pending.date.isoformat() if pending.date else "(לא נמצא)"
+    amount_str = f"₪{pending.amount:.2f}" if pending.amount is not None else "(לא נמצא)"
     return (
-        "📷 Got it:\n"
-        f"Merchant: {merchant}\n"
-        f"Date: {date_str}\n"
-        f"Amount: {amount_str}\n\n"
-        'Reply "yes" to save, "no" to cancel, or send a correction like '
-        '"amount 12.50", "date 2026-07-03", or "merchant Trader Joe\'s".'
+        "📷 קיבלתי:\n"
+        f"בית עסק: {merchant}\n"
+        f"תאריך: {date_str}\n"
+        f"סכום: {amount_str}\n\n"
+        'השיבו "כן" לשמירה, "לא" לביטול, או שלחו תיקון כמו '
+        '"סכום 12.50", "תאריך 2026-07-03", או "בית עסק שופרסל".'
     )
 
 
@@ -123,14 +128,14 @@ def handle_text_message(db, wa_from: str, body: str):
     if not parsed:
         whatsapp_client.send_text(
             wa_from,
-            'I didn\'t understand that. Try "Coffee 15" to log an expense, '
-            '"+2500 salary" for income, or send a receipt photo.',
+            'לא הבנתי את זה. נסו "קפה 15" כדי לרשום הוצאה, '
+            '"+2500 משכורת" להכנסה, או שלחו תמונה של קבלה.',
         )
         return
 
     account_id = _default_account_id(db)
     if account_id is None:
-        whatsapp_client.send_text(wa_from, "Add an account in the app first, then try again.")
+        whatsapp_client.send_text(wa_from, "הוסיפו חשבון באפליקציה קודם, ואז נסו שוב.")
         return
 
     category_id = categorize.guess_category_id(parsed["description"], db)
@@ -151,38 +156,38 @@ def handle_text_message(db, wa_from: str, body: str):
 
     category_name = db.get(models.Category, category_id).name if category_id else None
     sign = "+" if parsed["amount"] > 0 else "-"
-    reply = f"✅ Logged: {parsed['description']} {sign}${abs(parsed['amount']):.2f}"
+    reply = f"✅ נרשם: {parsed['description']} {sign}₪{abs(parsed['amount']):.2f}"
     if category_name:
         reply += f" ({category_name})"
-    reply += f" on {tx_date.isoformat()}"
+    reply += f" בתאריך {tx_date.isoformat()}"
     whatsapp_client.send_text(wa_from, reply)
 
 
 def _handle_pending_reply(db, pending, body: str):
-    lower = body.lower()
+    lower = body.strip().lower()
     if lower in CONFIRM_WORDS:
         _save_pending(db, pending)
         return
     if lower in CANCEL_WORDS:
         db.delete(pending)
         db.commit()
-        whatsapp_client.send_text(pending.wa_from, "Cancelled.")
+        whatsapp_client.send_text(pending.wa_from, "בוטל.")
         return
 
     match = CORRECTION_RE.match(body)
     if match:
-        field, value = match.group(1).lower(), match.group(2).strip()
+        field, value = CORRECTION_FIELDS[match.group(1).lower()], match.group(2).strip()
         if field == "amount":
             try:
                 pending.amount = abs(float(value.replace(",", "")))
             except ValueError:
-                whatsapp_client.send_text(pending.wa_from, 'Couldn\'t read that amount, try "amount 12.50".')
+                whatsapp_client.send_text(pending.wa_from, 'לא הצלחתי לקרוא את הסכום, נסו "סכום 12.50".')
                 return
         elif field == "date":
             try:
                 pending.date = date_parser.parse(value, fuzzy=True).date()
             except (ValueError, OverflowError):
-                whatsapp_client.send_text(pending.wa_from, 'Couldn\'t read that date, try "date 2026-07-03".')
+                whatsapp_client.send_text(pending.wa_from, 'לא הצלחתי לקרוא את התאריך, נסו "תאריך 2026-07-03".')
                 return
         elif field == "merchant":
             pending.merchant = value
@@ -197,13 +202,13 @@ def _save_pending(db, pending):
     account_id = _default_account_id(db)
     if account_id is None or pending.amount is None:
         whatsapp_client.send_text(
-            pending.wa_from, "Missing an amount, or no account is set up yet — can't save this one."
+            pending.wa_from, "חסר סכום, או שעדיין לא הוגדר חשבון — אי אפשר לשמור את זה."
         )
         db.delete(pending)
         db.commit()
         return
 
-    description = pending.merchant or "Receipt"
+    description = pending.merchant or "קבלה"
     tx_date = pending.date or date.today()
     amount = -abs(pending.amount)
     category_id = categorize.guess_category_id(description, db)
@@ -224,18 +229,18 @@ def _save_pending(db, pending):
     wa_from = pending.wa_from
     db.delete(pending)
     db.commit()
-    whatsapp_client.send_text(wa_from, f"✅ Saved: {description} -${abs(amount):.2f} on {tx_date.isoformat()}")
+    whatsapp_client.send_text(wa_from, f"✅ נשמר: {description} -₪{abs(amount):.2f} בתאריך {tx_date.isoformat()}")
 
 
 def handle_image_message(db, wa_from: str, media_id: str | None):
     if not media_id:
-        whatsapp_client.send_text(wa_from, "Sorry, I couldn't read that image.")
+        whatsapp_client.send_text(wa_from, "מצטער, לא הצלחתי לקרוא את התמונה הזו.")
         return
     try:
         content = whatsapp_client.download_media(media_id)
         result = ocr.scan_receipt_image(content)
     except Exception:
-        whatsapp_client.send_text(wa_from, "Sorry, I couldn't read that receipt image.")
+        whatsapp_client.send_text(wa_from, "מצטער, לא הצלחתי לקרוא את הקבלה הזו.")
         return
 
     pending = models.PendingReceipt(

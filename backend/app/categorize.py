@@ -4,14 +4,14 @@ from sqlalchemy.orm import Session
 from . import models
 
 DEFAULT_KEYWORDS = {
-    "Groceries": ["grocery", "groceries", "supermarket", "market", "walmart", "costco", "trader joe"],
-    "Dining Out": ["coffee", "cafe", "restaurant", "lunch", "dinner", "starbucks", "mcdonald", "pizza"],
-    "Transport": ["gas", "fuel", "uber", "lyft", "taxi", "parking", "train", "bus fare"],
-    "Utilities": ["electric", "water bill", "internet bill", "phone bill", "utility"],
-    "Rent/Mortgage": ["rent", "mortgage"],
-    "Shopping": ["amazon", "shopping", "clothes", "mall"],
-    "Health": ["pharmacy", "doctor", "gym", "clinic", "hospital"],
-    "Entertainment": ["movie", "netflix", "spotify", "cinema", "concert"],
+    "מכולת": ["grocery", "groceries", "supermarket", "market", "שופרסל", "רמי לוי", "סופר", "מכולת"],
+    "מסעדות": ["coffee", "cafe", "restaurant", "starbucks", "pizza", "קפה", "מסעדה", "בית קפה", "פיצה"],
+    "תחבורה": ["gas", "fuel", "uber", "taxi", "parking", "bus fare", "דלק", "מונית", "חניה", "אוטובוס", "רכבת"],
+    "חשבונות": ["electric", "water bill", "internet bill", "phone bill", "utility", "חשמל", "מים", "אינטרנט", "סלולר"],
+    "שכירות/משכנתא": ["rent", "mortgage", "שכירות", "משכנתא", "דירה"],
+    "קניות": ["amazon", "shopping", "clothes", "mall", "קניות", "בגדים", "קניון"],
+    "בריאות": ["pharmacy", "doctor", "gym", "clinic", "hospital", "בית מרקחת", "רופא", "חדר כושר", "קופת חולים"],
+    "בידור": ["movie", "netflix", "spotify", "cinema", "concert", "קולנוע", "סרט", "הופעה"],
 }
 
 

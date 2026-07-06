@@ -1,14 +1,14 @@
 const CATEGORY_ICONS = {
-  Salary: "💰",
-  Groceries: "🛒",
-  "Dining Out": "🍽️",
-  Transport: "🚗",
-  Utilities: "⚡",
-  "Rent/Mortgage": "🏠",
-  Shopping: "🛍️",
-  Health: "💊",
-  Entertainment: "🎬",
-  Other: "🏷️",
+  "משכורת": "💰",
+  "מכולת": "🛒",
+  "מסעדות": "🍽️",
+  "תחבורה": "🚗",
+  "חשבונות": "⚡",
+  "שכירות/משכנתא": "🏠",
+  "קניות": "🛍️",
+  "בריאות": "💊",
+  "בידור": "🎬",
+  "אחר": "🏷️",
 };
 
 export function categoryIcon(name) {

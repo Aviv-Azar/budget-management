@@ -28,16 +28,16 @@ def lan_ip():
         s.close()
 
 DEFAULT_CATEGORIES = [
-    ("Salary", "income", "#22c55e"),
-    ("Groceries", "expense", "#f97316"),
-    ("Dining Out", "expense", "#ef4444"),
-    ("Transport", "expense", "#3b82f6"),
-    ("Utilities", "expense", "#eab308"),
-    ("Rent/Mortgage", "expense", "#8b5cf6"),
-    ("Shopping", "expense", "#ec4899"),
-    ("Health", "expense", "#14b8a6"),
-    ("Entertainment", "expense", "#f59e0b"),
-    ("Other", "expense", "#64748b"),
+    ("משכורת", "income", "#22c55e"),
+    ("מכולת", "expense", "#f97316"),
+    ("מסעדות", "expense", "#ef4444"),
+    ("תחבורה", "expense", "#3b82f6"),
+    ("חשבונות", "expense", "#eab308"),
+    ("שכירות/משכנתא", "expense", "#8b5cf6"),
+    ("קניות", "expense", "#ec4899"),
+    ("בריאות", "expense", "#14b8a6"),
+    ("בידור", "expense", "#f59e0b"),
+    ("אחר", "expense", "#64748b"),
 ]
 
 

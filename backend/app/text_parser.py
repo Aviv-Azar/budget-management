@@ -29,6 +29,6 @@ def parse_quick_entry(message: str) -> dict | None:
 
     description = " ".join(tokens[:amount_index] + tokens[amount_index + 1 :]).strip()
     if not description:
-        description = "WhatsApp entry"
+        description = "רשומת וואטסאפ"
 
     return {"description": description, "amount": amount if is_income else -abs(amount)}

@@ -14,6 +14,11 @@ class AccountCreate(AccountBase):
     pass
 
 
+class AccountUpdate(BaseModel):
+    name: str | None = None
+    type: str | None = None
+
+
 class Account(AccountBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -28,6 +33,12 @@ class CategoryBase(BaseModel):
 
 class CategoryCreate(CategoryBase):
     pass
+
+
+class CategoryUpdate(BaseModel):
+    name: str | None = None
+    kind: str | None = None
+    color: str | None = None
 
 
 class Category(CategoryBase):

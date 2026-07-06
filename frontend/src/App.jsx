@@ -6,10 +6,10 @@ import CategoriesView from "./components/CategoriesView";
 import ImportView from "./components/ImportView";
 
 const TABS = [
-  { key: "transactions", label: "Activity", icon: "📒" },
-  { key: "import", label: "Import", icon: "📥" },
-  { key: "accounts", label: "Accounts", icon: "🏦" },
-  { key: "categories", label: "Categories", icon: "🏷️" },
+  { key: "transactions", label: "פעילות", icon: "📒" },
+  { key: "import", label: "ייבוא", icon: "📥" },
+  { key: "accounts", label: "חשבונות", icon: "🏦" },
+  { key: "categories", label: "קטגוריות", icon: "🏷️" },
 ];
 
 export default function App() {
@@ -32,14 +32,14 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-bg text-ink">
       <header className="sticky top-0 z-10 bg-bg/90 backdrop-blur border-b border-border px-5 py-4">
         <div className="max-w-2xl mx-auto flex items-center gap-2.5">
-          <span className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-sm font-black">₿</span>
-          <h1 className="text-[15px] font-extrabold tracking-tight uppercase">Budget</h1>
+          <span className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center text-sm font-black">₪</span>
+          <h1 className="text-[15px] font-extrabold tracking-tight">תקציב</h1>
         </div>
       </header>
 
       <main className="flex-1 overflow-y-auto pb-24 px-4 pt-5 max-w-2xl w-full mx-auto">
         {!loaded ? (
-          <p className="text-center text-faint mt-10 text-sm">Loading…</p>
+          <p className="text-center text-faint mt-10 text-sm">טוען…</p>
         ) : tab === "transactions" ? (
           <TransactionsView accounts={accounts} categories={categories} />
         ) : tab === "import" ? (

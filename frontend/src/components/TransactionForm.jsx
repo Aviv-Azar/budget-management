@@ -4,6 +4,8 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+const KIND_LABELS = { expense: "הוצאה", income: "הכנסה" };
+
 const inputClass =
   "w-full rounded-xl border border-border bg-surface-2 text-ink placeholder:text-faint px-3.5 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-accent";
 
@@ -29,7 +31,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
   async function handleSubmit(e) {
     e.preventDefault();
     if (!form.account_id || !form.amount || !form.description) {
-      setError("Account, description, and amount are required.");
+      setError("יש למלא חשבון, תיאור וסכום.");
       return;
     }
     setSaving(true);
@@ -61,7 +63,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
     >
       <div className="bg-surface w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-5 space-y-3.5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-extrabold">{initial?.id ? "Edit transaction" : "Add transaction"}</h2>
+          <h2 className="text-base font-extrabold">{initial?.id ? "עריכת תנועה" : "הוספת תנועה"}</h2>
           <button type="button" onClick={onCancel} className="text-faint text-xl leading-none px-1">
             ×
           </button>
@@ -69,7 +71,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
 
         {initial?.raw_text && (
           <details className="text-xs text-muted">
-            <summary className="cursor-pointer font-semibold">Scanned text (tap to check if something looks wrong)</summary>
+            <summary className="cursor-pointer font-semibold">טקסט סרוק (הקישו לבדיקה אם משהו נראה לא נכון)</summary>
             <pre className="whitespace-pre-wrap mt-1.5 bg-surface-2 rounded-lg p-2.5">{initial.raw_text}</pre>
           </details>
         )}
@@ -80,7 +82,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
               type="button"
               key={k}
               onClick={() => setKind(k)}
-              className={`flex-1 py-2 rounded-lg text-sm font-bold capitalize transition-colors ${
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-colors ${
                 kind === k
                   ? k === "expense"
                     ? "bg-expense-soft text-expense"
@@ -88,14 +90,14 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
                   : "text-faint"
               }`}
             >
-              {k}
+              {KIND_LABELS[k]}
             </button>
           ))}
         </div>
 
         <div className="flex items-center justify-center py-2">
-          <span className={`text-2xl font-extrabold mr-1 ${kind === "expense" ? "text-expense" : "text-income"}`}>
-            {kind === "expense" ? "−$" : "+$"}
+          <span className={`text-2xl font-extrabold me-1 ${kind === "expense" ? "text-expense" : "text-income"}`}>
+            {kind === "expense" ? "−₪" : "+₪"}
           </span>
           <input
             type="number"
@@ -112,7 +114,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
 
         <input
           type="text"
-          placeholder="Description"
+          placeholder="תיאור"
           value={form.description}
           onChange={(e) => set("description", e.target.value)}
           className={inputClass}
@@ -120,7 +122,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
 
         <input
           type="text"
-          placeholder="Merchant (optional)"
+          placeholder="בית עסק (רשות)"
           value={form.merchant}
           onChange={(e) => set("merchant", e.target.value)}
           className={inputClass}
@@ -140,7 +142,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
           onChange={(e) => set("account_id", e.target.value)}
           className={inputClass}
         >
-          <option value="" disabled>Account</option>
+          <option value="" disabled>חשבון</option>
           {accounts.map((a) => (
             <option key={a.id} value={a.id}>{a.name}</option>
           ))}
@@ -151,14 +153,14 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
           onChange={(e) => set("category_id", e.target.value)}
           className={inputClass}
         >
-          <option value="">No category</option>
+          <option value="">ללא קטגוריה</option>
           {categories.filter((c) => c.kind === kind).map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
 
         <textarea
-          placeholder="Notes (optional)"
+          placeholder="הערות (רשות)"
           value={form.notes}
           onChange={(e) => set("notes", e.target.value)}
           className={inputClass}
@@ -174,7 +176,7 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
               onClick={() => onDelete(initial.id)}
               className="px-4 py-2.5 rounded-xl bg-expense-soft text-expense text-sm font-bold active:scale-95 transition-transform"
             >
-              Delete
+              מחיקה
             </button>
           )}
           <div className="flex-1" />
@@ -183,14 +185,14 @@ export default function TransactionForm({ accounts, categories, initial, onSave,
             onClick={onCancel}
             className="px-4 py-2.5 rounded-xl text-sm font-bold text-muted"
           >
-            Cancel
+            ביטול
           </button>
           <button
             type="submit"
             disabled={saving}
             className="px-5 py-2.5 rounded-xl bg-accent text-white text-sm font-bold disabled:opacity-50 active:scale-95 transition-transform"
           >
-            {saving ? "Saving…" : "Save"}
+            {saving ? "שומר…" : "שמירה"}
           </button>
         </div>
       </div>

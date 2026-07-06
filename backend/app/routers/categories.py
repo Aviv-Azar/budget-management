@@ -22,6 +22,18 @@ def create_category(payload: schemas.CategoryCreate, db: Session = Depends(get_d
     return category
 
 
+@router.put("/{category_id}", response_model=schemas.Category)
+def update_category(category_id: int, payload: schemas.CategoryUpdate, db: Session = Depends(get_db)):
+    category = db.get(models.Category, category_id)
+    if not category:
+        raise HTTPException(404, "Category not found")
+    for key, value in payload.model_dump(exclude_unset=True).items():
+        setattr(category, key, value)
+    db.commit()
+    db.refresh(category)
+    return category
+
+
 @router.delete("/{category_id}", status_code=204)
 def delete_category(category_id: int, db: Session = Depends(get_db)):
     category = db.get(models.Category, category_id)
