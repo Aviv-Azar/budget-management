@@ -16,16 +16,20 @@ DEFAULT_KEYWORDS = {
 
 
 def seed_keywords(db: Session):
-    if db.query(models.CategoryKeyword).count() > 0:
-        return
     categories_by_name = {c.name: c for c in db.scalars(select(models.Category)).all()}
+    existing = {(k.category_id, k.keyword) for k in db.scalars(select(models.CategoryKeyword)).all()}
+    added = False
     for category_name, keywords in DEFAULT_KEYWORDS.items():
         category = categories_by_name.get(category_name)
         if not category:
             continue
         for keyword in keywords:
+            if (category.id, keyword) in existing:
+                continue
             db.add(models.CategoryKeyword(category_id=category.id, keyword=keyword))
-    db.commit()
+            added = True
+    if added:
+        db.commit()
 
 
 def guess_category_id(description: str, db: Session) -> int | None:
