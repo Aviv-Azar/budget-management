@@ -23,6 +23,20 @@ CORRECTION_FIELDS = {
 }
 
 
+@router.get("/debug-config")
+def debug_config():
+    token = config.WHATSAPP_ACCESS_TOKEN
+    return {
+        "configured": config.whatsapp_configured(),
+        "phone_number_id": config.WHATSAPP_PHONE_NUMBER_ID,
+        "phone_number_id_length": len(config.WHATSAPP_PHONE_NUMBER_ID),
+        "token_length": len(token),
+        "token_last_8": token[-8:] if token else None,
+        "allowed_from": config.WHATSAPP_ALLOWED_FROM,
+        "graph_version": config.WHATSAPP_GRAPH_VERSION,
+    }
+
+
 @router.get("/webhook")
 def verify_webhook(request: Request):
     params = request.query_params
