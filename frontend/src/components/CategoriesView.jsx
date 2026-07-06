@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api";
+import { categoryIcon } from "../categoryIcons";
 
 export default function CategoriesView({ categories, onChange }) {
   const [name, setName] = useState("");
@@ -29,19 +30,19 @@ export default function CategoriesView({ categories, onChange }) {
   const expense = categories.filter((c) => c.kind === "expense");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <form onSubmit={handleAdd} className="flex gap-2 items-center">
         <input
           type="text"
           placeholder="New category name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className="flex-1 rounded-xl border border-border bg-surface-2 text-ink placeholder:text-faint px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <select
           value={kind}
           onChange={(e) => setKind(e.target.value)}
-          className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-2 text-ink px-2.5 py-2.5 text-sm"
         >
           <option value="expense">Expense</option>
           <option value="income">Income</option>
@@ -50,11 +51,13 @@ export default function CategoriesView({ categories, onChange }) {
           type="color"
           value={color}
           onChange={(e) => setColor(e.target.value)}
-          className="w-9 h-9 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent"
+          className="w-10 h-10 rounded-xl border border-border bg-transparent shrink-0"
         />
-        <button className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-medium">Add</button>
+        <button className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform">
+          Add
+        </button>
       </form>
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && <p className="text-sm text-expense font-medium">{error}</p>}
 
       <CategoryGroup title="Expense categories" items={expense} onDelete={handleDelete} />
       <CategoryGroup title="Income categories" items={income} onDelete={handleDelete} />
@@ -65,16 +68,19 @@ export default function CategoriesView({ categories, onChange }) {
 function CategoryGroup({ title, items, onDelete }) {
   return (
     <div>
-      <p className="text-xs font-medium text-slate-500 mb-1">{title}</p>
-      <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800">
-        {items.length === 0 && <p className="text-center text-slate-500 p-3 text-sm">None yet.</p>}
+      <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-2 px-1">{title}</p>
+      <div className="rounded-2xl overflow-hidden bg-surface divide-y divide-border">
+        {items.length === 0 && <p className="text-center text-muted p-5 text-sm">None yet.</p>}
         {items.map((c) => (
-          <div key={c.id} className="flex items-center justify-between px-3 py-2 bg-white dark:bg-slate-900">
-            <span className="flex items-center gap-2 text-sm">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: c.color }} />
-              {c.name}
+          <div key={c.id} className="flex items-center gap-3 px-4 py-3">
+            <span
+              className="w-9 h-9 rounded-full flex items-center justify-center text-sm shrink-0"
+              style={{ backgroundColor: `${c.color}26` }}
+            >
+              {categoryIcon(c.name)}
             </span>
-            <button onClick={() => onDelete(c.id)} className="text-xs text-red-600 dark:text-red-400 font-medium">
+            <span className="flex-1 text-[15px] font-semibold">{c.name}</span>
+            <button onClick={() => onDelete(c.id)} className="text-xs text-expense font-bold px-2 py-1">
               Delete
             </button>
           </div>

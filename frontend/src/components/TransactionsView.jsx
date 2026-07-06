@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "../api";
+import { categoryIcon } from "../categoryIcons";
 import TransactionForm from "./TransactionForm";
 
 function formatMoney(n) {
@@ -96,18 +97,18 @@ export default function TransactionsView({ accounts, categories }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-3 gap-2">
-        <SummaryCard label="Income" value={income} color="text-green-600 dark:text-green-400" />
-        <SummaryCard label="Expenses" value={expense} color="text-red-600 dark:text-red-400" />
-        <SummaryCard label="Net" value={income + expense} color="text-slate-900 dark:text-slate-100" />
+    <div className="space-y-5">
+      <div className="grid grid-cols-3 gap-2.5">
+        <SummaryCard label="Income" value={income} tone="income" />
+        <SummaryCard label="Expenses" value={expense} tone="expense" />
+        <SummaryCard label="Net" value={income + expense} tone="net" />
       </div>
 
       <div className="flex items-center gap-2">
         <select
           value={accountFilter}
           onChange={(e) => setAccountFilter(e.target.value)}
-          className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className="flex-1 rounded-xl border border-border bg-surface text-ink px-3 py-2.5 text-sm font-medium"
         >
           <option value="">All accounts</option>
           {accounts.map((a) => (
@@ -117,7 +118,7 @@ export default function TransactionsView({ accounts, categories }) {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={scanning}
-          className="rounded-lg bg-slate-700 text-white px-3 py-2 text-sm font-medium whitespace-nowrap disabled:opacity-50"
+          className="rounded-xl bg-surface border border-border text-ink px-3.5 py-2.5 text-sm font-bold whitespace-nowrap disabled:opacity-50 active:scale-95 transition-transform"
         >
           {scanning ? "Scanning…" : "📷 Scan"}
         </button>
@@ -131,58 +132,58 @@ export default function TransactionsView({ accounts, categories }) {
         />
         <button
           onClick={() => setEditing({})}
-          className="rounded-lg bg-indigo-600 text-white px-4 py-2 text-sm font-medium whitespace-nowrap"
+          className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold whitespace-nowrap active:scale-95 transition-transform"
         >
           + Add
         </button>
       </div>
 
-      {scanError && <p className="text-sm text-red-500">{scanError}</p>}
+      {scanError && <p className="text-sm text-expense">{scanError}</p>}
 
       {loading ? (
-        <p className="text-center text-slate-500 mt-8">Loading…</p>
+        <p className="text-center text-faint mt-10 text-sm">Loading…</p>
       ) : transactions.length === 0 ? (
-        <p className="text-center text-slate-500 mt-8">No transactions yet. Add one, or import a file.</p>
+        <EmptyState onAdd={() => setEditing({})} onScan={() => fileInputRef.current?.click()} />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {grouped.map(([date, items]) => (
             <div key={date}>
-              <p className="text-xs font-medium text-slate-500 mb-1">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-2 px-1">
                 {new Date(date + "T00:00:00").toLocaleDateString(undefined, {
                   weekday: "short",
                   month: "short",
                   day: "numeric",
                 })}
               </p>
-              <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800">
+              <div className="rounded-2xl overflow-hidden bg-surface divide-y divide-border">
                 {items.map((t) => {
                   const cat = t.category_id ? categoryById[t.category_id] : null;
                   return (
                     <button
                       key={t.id}
                       onClick={() => setEditing(t)}
-                      className="w-full flex items-center justify-between gap-3 px-3 py-2.5 bg-white dark:bg-slate-900 text-left"
+                      className="w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-surface-2 transition-colors"
                     >
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{t.description}</p>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          {cat && (
-                            <span
-                              className="text-[11px] px-1.5 py-0.5 rounded-full text-white"
-                              style={{ backgroundColor: cat.color }}
-                            >
-                              {cat.name}
-                            </span>
-                          )}
-                          <span className="text-xs text-slate-500 truncate">{t.account.name}</span>
-                        </div>
+                      <span
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0"
+                        style={{ backgroundColor: cat ? `${cat.color}26` : "var(--color-surface-3)" }}
+                      >
+                        {cat ? categoryIcon(cat.name) : "🏷️"}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[15px] font-semibold truncate">{t.description}</p>
+                        <p className="text-xs text-muted truncate mt-0.5">
+                          {cat ? `${cat.name} · ` : ""}
+                          {t.account.name}
+                        </p>
                       </div>
                       <span
-                        className={`text-sm font-semibold whitespace-nowrap ${
-                          t.amount < 0 ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"
+                        className={`text-[15px] font-extrabold whitespace-nowrap ${
+                          t.amount < 0 ? "text-expense" : "text-income"
                         }`}
                       >
-                        {formatMoney(t.amount)}
+                        {t.amount < 0 ? "−" : "+"}
+                        {formatMoney(Math.abs(t.amount))}
                       </span>
                     </button>
                   );
@@ -207,11 +208,41 @@ export default function TransactionsView({ accounts, categories }) {
   );
 }
 
-function SummaryCard({ label, value, color }) {
+const TONE_STYLES = {
+  income: "text-income",
+  expense: "text-expense",
+  net: "text-ink",
+};
+
+function SummaryCard({ label, value, tone }) {
   return (
-    <div className="rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-2.5 text-center">
-      <p className="text-[11px] text-slate-500">{label}</p>
-      <p className={`text-sm font-semibold ${color}`}>{formatMoney(value)}</p>
+    <div className="rounded-2xl bg-surface px-3 py-3.5">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-faint mb-1">{label}</p>
+      <p className={`text-[15px] font-extrabold tracking-tight ${TONE_STYLES[tone]}`}>{formatMoney(value)}</p>
+    </div>
+  );
+}
+
+function EmptyState({ onAdd, onScan }) {
+  return (
+    <div className="rounded-2xl bg-surface px-6 py-10 text-center mt-2">
+      <div className="text-4xl mb-3">📒</div>
+      <p className="font-bold text-ink mb-1">No transactions yet</p>
+      <p className="text-sm text-muted mb-5">Add one by hand, scan a receipt, or import a statement.</p>
+      <div className="flex items-center justify-center gap-2">
+        <button
+          onClick={onAdd}
+          className="rounded-xl bg-accent text-white px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform"
+        >
+          + Add transaction
+        </button>
+        <button
+          onClick={onScan}
+          className="rounded-xl bg-surface-2 border border-border text-ink px-4 py-2.5 text-sm font-bold active:scale-95 transition-transform"
+        >
+          📷 Scan receipt
+        </button>
+      </div>
     </div>
   );
 }
