@@ -68,4 +68,11 @@ export const api = {
       return requestForm("/import/commit", form);
     },
   },
+  budgets: {
+    list: (month) => request(`/budgets?month=${month}`),
+    upsert: (data) => request("/budgets", { method: "PUT", body: JSON.stringify(data) }),
+  },
+  dashboard: {
+    get: (month) => request(`/dashboard?month=${month}`),
+  },
 };

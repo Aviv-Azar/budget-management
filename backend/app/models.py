@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String
+from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -27,8 +27,11 @@ class Category(Base):
     name: Mapped[str] = mapped_column(String(100), unique=True)
     kind: Mapped[str] = mapped_column(String(10), default="expense")  # "income" | "expense"
     color: Mapped[str] = mapped_column(String(20), default="#64748b")
+    # income | savings | bills | variable | loan
+    group: Mapped[str] = mapped_column(String(20), default="variable")
 
     transactions: Mapped[list["Transaction"]] = relationship(back_populates="category")
+    budgets: Mapped[list["Budget"]] = relationship(back_populates="category", cascade="all, delete-orphan")
 
 
 class Transaction(Base):
@@ -51,6 +54,18 @@ class Transaction(Base):
 
     account: Mapped["Account"] = relationship(back_populates="transactions")
     category: Mapped["Category | None"] = relationship(back_populates="transactions")
+
+
+class Budget(Base):
+    __tablename__ = "budgets"
+    __table_args__ = (UniqueConstraint("category_id", "month", name="uq_budget_category_month"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+    month: Mapped[date] = mapped_column(Date)  # always the 1st of the month
+    target_amount: Mapped[float] = mapped_column(Numeric(12, 2))
+
+    category: Mapped["Category"] = relationship(back_populates="budgets")
 
 
 class CategoryKeyword(Base):

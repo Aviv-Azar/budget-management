@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "./api";
+import DashboardView from "./components/DashboardView";
 import TransactionsView from "./components/TransactionsView";
 import AccountsView from "./components/AccountsView";
 import CategoriesView from "./components/CategoriesView";
 import ImportView from "./components/ImportView";
 
 const TABS = [
+  { key: "dashboard", label: "לוח בקרה", icon: "📊" },
   { key: "transactions", label: "פעילות", icon: "📒" },
   { key: "import", label: "ייבוא", icon: "📥" },
   { key: "accounts", label: "חשבונות", icon: "🏦" },
@@ -13,7 +15,7 @@ const TABS = [
 ];
 
 export default function App() {
-  const [tab, setTab] = useState("transactions");
+  const [tab, setTab] = useState("dashboard");
   const [accounts, setAccounts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -40,6 +42,8 @@ export default function App() {
       <main className="flex-1 overflow-y-auto pb-24 px-4 pt-5 max-w-2xl w-full mx-auto">
         {!loaded ? (
           <p className="text-center text-faint mt-10 text-sm">טוען…</p>
+        ) : tab === "dashboard" ? (
+          <DashboardView />
         ) : tab === "transactions" ? (
           <TransactionsView accounts={accounts} categories={categories} />
         ) : tab === "import" ? (

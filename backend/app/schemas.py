@@ -25,10 +25,14 @@ class Account(AccountBase):
     created_at: datetime
 
 
+CategoryGroup = Literal["income", "savings", "bills", "variable", "loan"]
+
+
 class CategoryBase(BaseModel):
     name: str
     kind: str = "expense"
     color: str = "#64748b"
+    group: CategoryGroup = "variable"
 
 
 class CategoryCreate(CategoryBase):
@@ -39,11 +43,24 @@ class CategoryUpdate(BaseModel):
     name: str | None = None
     kind: str | None = None
     color: str | None = None
+    group: CategoryGroup | None = None
 
 
 class Category(CategoryBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
+
+
+class BudgetUpsert(BaseModel):
+    category_id: int
+    month: date_
+    target_amount: float
+
+
+class Budget(BudgetUpsert):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    category: Category
 
 
 class TransactionBase(BaseModel):
