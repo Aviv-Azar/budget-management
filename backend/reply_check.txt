@@ -1,4 +1,0 @@
-bytes: e29c8520d7a0d7a8d7a9d79d3a20d7a7d7a4d794202de282aa31352e303020d791d7aad790d7a8d799d79a20323032362d30372d3036
-text: ✅ נרשם: קפה -₪15.00 בתאריך 2026-07-06
-status: 200
-response: {"messaging_product":"whatsapp","contacts":[{"input":"972545380495","wa_id":"972545380495"}],"messages":[{"id":"wamid.HBgMOTcyNTQ1MzgwNDk1FQIAERgSQkYxOTcyMjExODQyRjk1MEU3AA=="}]}
