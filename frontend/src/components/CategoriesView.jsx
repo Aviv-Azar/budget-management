@@ -46,6 +46,11 @@ export default function CategoriesView({ categories, onChange }) {
 
   return (
     <div className="space-y-5">
+      <p className="text-xs text-muted leading-relaxed">
+        כל תנועה משויכת לקטגוריה, וכל קטגוריה שייכת ל"קבוצה" (הכנסות / חיסכון / חשבונות קבועים /
+        הוצאות משתנות / הלוואות) — הקבוצה הזו קובעת תחת איזה חלק היא מופיעה בלוח הבקרה. אפשר
+        לשנות קבוצה בכל עת מהרשימה שלמטה, גם לאחר היצירה.
+      </p>
       <form onSubmit={handleAdd} className="space-y-2">
         <div className="flex gap-2 items-center">
           <input

@@ -30,6 +30,10 @@ export default function AccountsView({ accounts, onChange }) {
 
   return (
     <div className="space-y-4">
+      <p className="text-xs text-muted leading-relaxed">
+        הוסיפו כאן כל חשבון בנק, כרטיס אשראי, קופת חיסכון או ארנק מזומן שברצונכם לעקוב אחריו —
+        כל תנועה (ידנית, מיובאת, סרוקה או מוואטסאפ) משויכת לאחד מהם, וניתן לסנן לפיו בלשונית הפעילות.
+      </p>
       <form onSubmit={handleAdd} className="flex gap-2">
         <input
           type="text"

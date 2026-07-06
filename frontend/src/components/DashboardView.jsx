@@ -82,6 +82,14 @@ export default function DashboardView() {
 
       {data.top_expenses.length > 0 && <ExpenseBreakdown items={data.top_expenses} />}
 
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-1 px-1">תקציב לפי קטגוריה</p>
+        <p className="text-xs text-muted px-1">
+          הקלידו סכום בשדה "יעד" ליד כל קטגוריה כדי לקבוע תקציב חודשי לה. פס ההתקדמות יתמלא
+          לפי מה שכבר הוצא, ויתחלף לאדום אם חורגים מהיעד. קטגוריות ללא יעד לא מציגות פס.
+        </p>
+      </div>
+
       <div className="space-y-4">
         {GROUP_ORDER.map((g) => {
           const group = data.groups.find((x) => x.group === g);
@@ -123,7 +131,7 @@ function RemainingRing({ ratio, remaining }) {
       <div>
         <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-1">נותר להוצאה</p>
         <p className="text-2xl font-extrabold tracking-tight">{formatMoney(remaining)}</p>
-        <p className="text-xs text-muted mt-1">מתוך ההכנסה החודשית</p>
+        <p className="text-xs text-muted mt-1">הכנסות פחות הוצאות בחודש זה</p>
       </div>
     </div>
   );
@@ -138,7 +146,8 @@ function ExpenseBreakdown({ items }) {
   });
   return (
     <div className="rounded-2xl bg-surface p-5">
-      <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-4">חלוקת ההוצאות</p>
+      <p className="text-[11px] font-bold uppercase tracking-wider text-faint mb-1">חלוקת ההוצאות לפי קטגוריה</p>
+      <p className="text-xs text-muted mb-4">איפה הולך רוב הכסף החודש</p>
       <div className="flex items-center gap-5">
         <div
           className="w-28 h-28 rounded-full shrink-0"

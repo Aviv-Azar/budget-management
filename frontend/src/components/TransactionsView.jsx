@@ -138,6 +138,11 @@ export default function TransactionsView({ accounts, categories }) {
         </button>
       </div>
 
+      <p className="text-xs text-muted -mt-2">
+        "סריקה" מצלמת קבלה ומזהה אוטומטית את בית העסק, התאריך והסכום — תמיד עם אפשרות לתקן
+        לפני השמירה. "הוספה" פותחת טופס ריק להזנה ידנית.
+      </p>
+
       {scanError && <p className="text-sm text-expense">{scanError}</p>}
 
       {loading ? (

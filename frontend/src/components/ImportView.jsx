@@ -80,6 +80,14 @@ export default function ImportView({ accounts }) {
 
   return (
     <div className="space-y-5">
+      {!preview && !result && (
+        <p className="text-xs text-muted leading-relaxed">
+          מייצאים דוח תנועות מהבנק או מחברת האשראי (בפורמט CSV או Excel) ומעלים אותו כאן.
+          המערכת תציג תצוגה מקדימה ותבקש מכם להתאים אילו עמודות בקובץ הן תאריך, תיאור וסכום —
+          נדרש פעם אחת בלבד לכל חשבון, וההתאמה נשמרת לפעם הבאה. תנועות שכבר יובאו בעבר מזוהות
+          ומדולגות אוטומטית, כך שאפשר להעלות קובץ חופף בלי חשש לכפילויות.
+        </p>
+      )}
       <div>
         <label className={labelClass}>ייבוא לחשבון</label>
         <select
@@ -133,7 +141,7 @@ export default function ImportView({ accounts }) {
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-faint">זוהו {preview.row_count} שורות. התאימו את העמודות למטה.</p>
+          <p className="text-xs text-faint">זוהו {preview.row_count} שורות. התאימו את העמודות למטה לפי הדוגמה שלמעלה.</p>
 
           <div className="grid grid-cols-2 gap-3">
             <ColumnSelect label="עמודת תאריך" columns={preview.columns} value={mapping.date_col} onChange={(v) => setM("date_col", v)} />
@@ -141,6 +149,9 @@ export default function ImportView({ accounts }) {
             <ColumnSelect label="עמודת בית עסק (רשות)" columns={preview.columns} value={mapping.merchant_col} onChange={(v) => setM("merchant_col", v)} allowNone />
           </div>
 
+          <p className="text-xs text-muted -mb-2">
+            כיצד מוצג הסכום בקובץ? עמודה אחת עם מספרים חיוביים/שליליים, או שתי עמודות נפרדות לחיוב וזיכוי:
+          </p>
           <div className="flex rounded-xl overflow-hidden bg-surface-2 p-1 text-sm">
             <button
               type="button"
@@ -175,7 +186,7 @@ export default function ImportView({ accounts }) {
 
           <label className="flex items-center gap-2 text-sm text-muted">
             <input type="checkbox" checked={mapping.dayfirst} onChange={(e) => setM("dayfirst", e.target.checked)} />
-            התאריכים בפורמט יום-חודש (DD/MM/YYYY) ולא חודש-יום
+            התאריכים בפורמט יום-חודש (למשל 03/07/2026 = 3 ביולי), ולא חודש-יום
           </label>
 
           <div className="flex gap-2">
