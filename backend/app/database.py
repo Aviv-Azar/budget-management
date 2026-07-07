@@ -10,7 +10,11 @@ if DATABASE_URL:
     # Render/Neon give postgres:// — SQLAlchemy's psycopg2 dialect wants postgresql://
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    engine = create_engine(DATABASE_URL)
+    # Neon closes idle connections server-side; pool_pre_ping tests each pooled
+    # connection before reuse and transparently reconnects if it's gone stale,
+    # avoiding "SSL connection has been closed unexpectedly" on the first query
+    # after a quiet period.
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
 else:
     DATA_DIR = Path(__file__).resolve().parent.parent / "data"
     DATA_DIR.mkdir(exist_ok=True)
