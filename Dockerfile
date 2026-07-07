@@ -7,7 +7,7 @@ RUN npm run build
 
 FROM python:3.12-slim AS runtime
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tesseract-ocr \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-heb \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /src

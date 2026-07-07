@@ -11,8 +11,12 @@ from PIL import Image, ImageOps
 WINDOWS_DEFAULT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 AMOUNT_RE = re.compile(r"\d{1,3}(?:[,.]\d{3})*[.,]\d{2}\b")
-TOTAL_KEYWORDS = ("total", "amount due", "balance due", "grand total", "amount")
+TOTAL_KEYWORDS = (
+    "total", "amount due", "balance due", "grand total", "amount",
+    'סה"כ', "סה״כ", "סהכ", "לתשלום", "סכום לתשלום", "לתשלום סופי", "סופי לתשלום", "סכום",
+)
 NOISE_LINE_RE = re.compile(r"^[\W_]*$")
+LETTERS_RE = re.compile(r"[A-Za-z֐-׿]{3,}")  # Latin or Hebrew letters
 DATE_LIKE_RE = re.compile(
     r"\d{1,4}[/\-.]\d{1,2}[/\-.]\d{1,4}|"
     r"\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b",
@@ -77,7 +81,7 @@ def _parse_date(text: str) -> date | None:
         if not DATE_LIKE_RE.search(line):
             continue
         try:
-            parsed = date_parser.parse(line, fuzzy=True, dayfirst=False)
+            parsed = date_parser.parse(line, fuzzy=True, dayfirst=True)
         except (ValueError, OverflowError):
             continue
         if 2000 <= parsed.year <= datetime.now().year + 1:
@@ -90,7 +94,7 @@ def _parse_merchant(text: str) -> str | None:
         stripped = line.strip()
         if not stripped or NOISE_LINE_RE.match(stripped):
             continue
-        if not re.search(r"[A-Za-z]{3,}", stripped):
+        if not LETTERS_RE.search(stripped):
             continue
         return stripped[:100]
     return None
@@ -99,7 +103,7 @@ def _parse_merchant(text: str) -> str | None:
 def scan_receipt_image(content: bytes) -> dict:
     try:
         image = preprocess_image(content)
-        text = pytesseract.image_to_string(image)
+        text = pytesseract.image_to_string(image, lang="heb+eng")
     except pytesseract.TesseractNotFoundError as e:
         raise OcrUnavailable(
             "Tesseract OCR isn't installed or couldn't be found on this PC."
